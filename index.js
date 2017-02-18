@@ -19,6 +19,21 @@ app.get('/climate/top', function (req, res) {
 })
 
 
+app.delete('/climate', function(req, res){
+    MongoClient.connect(url, function (err, db) {
+        db.collection('climate').remove(function (err) {
+            if (err != null) {
+                console.error(err);
+                res.status(500);                
+                res.write(err);
+            }
+
+            res.end();
+            db.close();
+        });
+    });
+});
+
 app.get('/climate/all', function (req, res) {
     res.setHeader('Content-Type', 'application/json');
     MongoClient.connect(url, function (err, db) {
@@ -26,8 +41,13 @@ app.get('/climate/all', function (req, res) {
             if (err == null) {
                 cursor.toArray(function (err, records) {
                     res.json(records);
-                    res.end();
+                    res.end();                        
                 });
+            } else {
+                console.error(err);                
+                res.status(500);                
+                res.write(err);
+                res.end();    
             }
 
             db.close();
