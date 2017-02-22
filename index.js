@@ -2,9 +2,10 @@ var rpiDhtSensor = require('rpi-dht-sensor');
 var express = require('express');
 var cors = require('cors');
 var MongoClient = require('mongodb').MongoClient
+var config = require('./config');
 
-var dht = new rpiDhtSensor.DHT11(4);
-var url = 'mongodb://localhost:27017/smart-house';
+var dht = new rpiDhtSensor.DHT11(config.refreshTimeout);
+var url = config.mongoConnectionString;
 
 var app = express()
 app.use(cors());
@@ -38,9 +39,7 @@ app.get('/climate/all', function (req, res) {
 var insertion = function () {
     var readout = dht.read();
 
-    if (readout.temperature === 0 || readout.humidity === 0) return;
-
-    if (readout.error) return;
+    if (readout.error || readout.temperature === 0 || readout.humidity === 0) return;
 
     MongoClient.connect(url, function (err, db) {
         if (err) {
@@ -61,9 +60,9 @@ var insertion = function () {
     });
 };
 
-setInterval(insertion, 60000);
+setInterval(insertion, config.refreshTimeout);
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!')
+app.listen(config.listeningPort, function () {
+    console.log(`Example app listening on port ${config.listeningPort}!`)
 });
 
