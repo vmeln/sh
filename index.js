@@ -4,37 +4,20 @@ var cors = require('cors');
 var MongoClient = require('mongodb').MongoClient
 var config = require('./config');
 
-var dht = new rpiDhtSensor.DHT11(config.refreshTimeout);
+var climateController = require('./controllers/climate.controller');
+
+var dht = new rpiDhtSensor.DHT11(config.dhtPort);
 var url = config.mongoConnectionString;
 
 var app = express()
 app.use(cors());
 app.use(express.static('public'));
 
-app.get('/climate/top', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    var readout = dht.read();
-    readout.time = new Date();
-    res.json(readout);
-    res.end();
-})
+app.get('/interval', (req, res) => {
+    res.json(config.refreshTimeout);
+});
 
-
-app.get('/climate/all', function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-    MongoClient.connect(url, function (err, db) {
-        db.collection('climate').find({}, {_id : 0, temperature: 1, humidity: 1, time: 1 }, function (err, cursor) {
-            if (err == null) {
-                cursor.toArray(function (err, records) {
-                    res.json(records);
-                    res.end();
-                });
-            }
-
-            db.close();
-        });
-    });
-})
+climateController(app);
 
 var insertion = function () {
     var readout = dht.read();

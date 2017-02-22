@@ -60,7 +60,9 @@
 
             drawInitial();
 
-            setInterval(drawTop, 60000);
+            $.get('/interval').done(function(interval){
+                setInterval(drawTop, interval);
+            });
         });
     });
 </script>
