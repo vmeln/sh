@@ -1,0 +1,68 @@
+<style>
+    #curve_chart {
+        height: 100%;
+    }
+</style>
+<div id="curve_chart">Loading chart data, please wait<img src="https://i0.wp.com/cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif?resize=18%2C18" alt=""/></div>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.js"></script>
+<script type="text/javascript">
+    $(function () {
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(function() {
+            var climateData = [
+                ['Time', 'Humidity', 'Temperature']
+            ];
+
+            var addRecord = function (climate) {
+                climateData.push([
+                    moment(climate.time).format('HH:mm:ss'),
+                    climate.humidity,
+                    climate.temperature
+                ]);
+
+                drawChart();
+            }
+
+            var addRecords = function (records) {
+                for (var i in records) {
+                    if (records.hasOwnProperty(i)) {
+                        addRecord(records[i]);
+                    }
+                }
+            };
+
+            var drawInitial = function () {
+                $.get('/climate/all')
+                    .done(addRecords);
+            };
+
+            var drawTop = function () {
+                $.get('/climate/top')
+                    .done(addRecord);
+            }
+
+            function drawChart() {
+                var data = google.visualization.arrayToDataTable(climateData);
+
+                var options = {
+                    title: 'Humidity & Temperature',
+                    curveType: 'function',
+                    legend: { position: 'bottom' }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+                chart.draw(data, options);
+            }
+
+
+            drawInitial();
+
+            $.get('/interval').done(function(interval){
+                setInterval(drawTop, interval);
+            });
+        });
+    });
+</script>

@@ -1,0 +1,17 @@
+{
+  "name": "dht_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Volodymyr Melnychuk",
+  "license": "MIT",
+  "dependencies": {
+    "rpi-dht-sensor": "0.1.1",
+    "express": "4.14.1",
+    "cors": "2.8.1",
+    "mongodb": "2.2.24"
+  }
+}
