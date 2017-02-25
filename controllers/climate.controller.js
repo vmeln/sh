@@ -77,5 +77,3 @@ var climateController = function (app) {
         });
     })
 };
-
-module.exports = climateController;
