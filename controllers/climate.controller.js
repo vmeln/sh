@@ -4,7 +4,7 @@ var rpiDhtSensor = require('rpi-dht-sensor');
 var url = require('url');
 
 var mongoUrl = config.mongoConnectionString;
-var dht = new rpiDhtSensor.DHT11(config.dhtPort);
+var dht = new rpiDhtSensor.DHT22(config.dhtPort);
 
 var climateController = function (app) {
     app.get('/climate/top', function (req, res) {

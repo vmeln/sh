@@ -6,7 +6,7 @@ var config = require('./config');
 
 var climateController = require('./controllers/climate.controller');
 
-var dht = new rpiDhtSensor.DHT11(config.dhtPort);
+var dht = new rpiDhtSensor.DHT22(config.dhtPort);
 var url = config.mongoConnectionString;
 
 var app = express()
